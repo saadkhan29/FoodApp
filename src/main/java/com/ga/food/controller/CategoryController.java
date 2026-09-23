@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Optional;
@@ -22,9 +23,15 @@ public class CategoryController {
     // CRUD
     // C - Create - HTTP POST - To create a record (category)
     @PostMapping("/categories")
-    public Category createCategory(@RequestBody Category categoryObject){
+    public Category createCategory(
+            @RequestParam("name") String name,
+            @RequestParam("description") String description,
+            @RequestParam("image") MultipartFile image) {
+
         System.out.println("Calling createCategory ==> ");
-        return categoryService.createCategory(categoryObject);
+//        System.out.println("Object ==> "+ name + description);
+
+        return categoryService.createCategory(name, description, image);
     }
 
 
@@ -42,8 +49,18 @@ public class CategoryController {
     }
 
     // U - Update - HTTP PUT - To update a record
-    // D -Delete - HTTP DELETE - To remove a record
+    @PutMapping("/categories/{categoryId}")
+    public Category updateCategory(@PathVariable(value = "categoryId") Long categoryId, @RequestBody Category categoryObject) {
+        System.out.println("calling updateCategory ==>");
+        return categoryService.updateCategory(categoryId, categoryObject);
+    }
 
+    // D -Delete - HTTP DELETE - To remove a record
+    @DeleteMapping("/categories/{categoryId}")
+    public Category deleteCategory(@PathVariable(value = "categoryId") Long categoryId) {
+        System.out.println("calling deleteCategory ==>");
+        return categoryService.deleteCategory(categoryId);
+    }
 
 
 }
