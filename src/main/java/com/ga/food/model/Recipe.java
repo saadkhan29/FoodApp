@@ -1,21 +1,21 @@
 package com.ga.food.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
-@ToString
 @Getter
 @Setter
+@ToString
 @Entity
-@Table(name = "categories")
-public class Category {
+@Table(name = "recipes")
+public class Recipe {
     @Id
     @Column
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,7 +25,24 @@ public class Category {
     private String name;
 
     @Column
-    private String description;
+    private String time;
+
+    @Column
+    private Integer portions;
+
+    @Column
+    private String ingredients;
+
+    @Column
+    private String steps;
+
+    @Column
+    private boolean isPublic;
+
+    @JsonIgnore
+    @ManyToOne
+    @JoinColumn(name = "category_id")
+    private Category category;
 
     @Column
     @CreationTimestamp
@@ -34,11 +51,4 @@ public class Category {
     @Column
     @UpdateTimestamp
     private LocalDateTime updatedAt;
-
-    @Column(nullable = true)
-    private String imageUrl;
-
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "category", orphanRemoval = true)
-    private List<Recipe> recipeList;
-
 }
