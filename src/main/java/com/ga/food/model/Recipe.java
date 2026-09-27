@@ -51,4 +51,9 @@ public class Recipe {
     @Column
     @UpdateTimestamp
     private LocalDateTime updatedAt;
+
+    @JsonIgnore
+    @ManyToOne
+    @JoinColumn(name="user_id")
+    private User user;
 }
