@@ -3,9 +3,12 @@ package com.ga.food.service;
 import com.ga.food.exception.InformationExistException;
 import com.ga.food.exception.InformationNotFoundException;
 import com.ga.food.model.Category;
+import com.ga.food.model.User;
 import com.ga.food.repository.CategoryRepository;
+import com.ga.food.security.MyUserDetails;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -28,6 +31,11 @@ public class CategoryService {
 
     private CategoryRepository categoryRepository;
 
+    public static User getCurrentLoggedInUser(){
+        MyUserDetails userDetails = (MyUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return userDetails.getUser();
+    }
+
     public Category createCategory(
             String name,
             String description,
@@ -35,7 +43,7 @@ public class CategoryService {
 
         System.out.println("Service Calling createCategory ==> ");
 
-        Category category = categoryRepository.findByName(name);
+        Category category = categoryRepository.findByUserIdAndName(getCurrentLoggedInUser().getId(), name);
 
         if (category != null) {
             throw new InformationExistException(
@@ -79,6 +87,7 @@ public class CategoryService {
             throw new RuntimeException("Could not save image", e);
         }
 
+        newCategory.setUser(getCurrentLoggedInUser());
         return categoryRepository.save(newCategory);
     }
 

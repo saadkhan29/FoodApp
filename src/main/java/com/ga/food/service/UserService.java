@@ -65,7 +65,7 @@ public class UserService {
             return ResponseEntity.ok(new LoginResponse(JWT));
         }
         catch (Exception e){
-            return ResponseEntity.ok(new LoginResponse("Error: user name or email is incorrect."));
+            return ResponseEntity.ok(new LoginResponse("Error: user name or email is incorrect." + e ));
         }
     }
 }
