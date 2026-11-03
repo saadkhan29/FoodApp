@@ -2,6 +2,7 @@ package com.ga.food.service;
 
 import com.ga.food.exception.InformationNotFoundException;
 import com.ga.food.model.Category;
+import com.ga.food.kafka.RecipeEventProducer;
 import com.ga.food.model.Recipe;
 import com.ga.food.repository.CategoryRepository;
 import com.ga.food.repository.RecipeRepository;
@@ -16,6 +17,7 @@ public class RecipeService {
 
     private RecipeRepository recipeRepository;
     private CategoryRepository categoryRepository;
+    private RecipeEventProducer recipeEventProducer;   // NEW: publishes events to Kafka
 
     public Recipe createRecipe(Long categoryId, Recipe recipe){
         System.out.println("Service calling createRecipe ==>");
@@ -25,7 +27,10 @@ public class RecipeService {
                                 "Category with id " + categoryId + " not found"
                         ));
         recipe.setCategory(category);
-        return recipeRepository.save(recipe);
+        Recipe savedRecipe = recipeRepository.save(recipe);
+        // NEW: announce "a recipe was created" to Kafka. We do not call anyone directly.
+        recipeEventProducer.sendRecipeCreated(categoryId, savedRecipe);
+        return savedRecipe;
     }
 
     public List<Recipe> getRecipes(Long categoryId) {
